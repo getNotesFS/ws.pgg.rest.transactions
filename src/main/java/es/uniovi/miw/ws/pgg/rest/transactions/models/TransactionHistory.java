@@ -1,4 +1,6 @@
 package es.uniovi.miw.ws.pgg.rest.transactions.models;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 
@@ -19,12 +21,15 @@ public class TransactionHistory {
 //    private long userGroup_id;
     @ManyToOne
     @JoinColumn(name = "transaction_id")
+    //@JsonIgnore
     private Transaction transaction;
     @ManyToOne
     @JoinColumn(name = "user_debtor_id")
+    //@JsonIgnore
     private User userDebtor;
     @ManyToOne
     @JoinColumn(name = "user_group_id")
+    //@JsonIgnore
     private UserGroup userGroup;
 
     public TransactionHistory() {

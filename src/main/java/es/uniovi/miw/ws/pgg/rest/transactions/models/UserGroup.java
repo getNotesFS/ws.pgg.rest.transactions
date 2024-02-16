@@ -1,6 +1,8 @@
 package es.uniovi.miw.ws.pgg.rest.transactions.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -27,14 +29,15 @@ public class UserGroup {
 
     @ManyToOne
     @JoinColumn(name = "group_id")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Group group;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private User user;
 
     @OneToMany(mappedBy = "userGroup")
-
     private List<TransactionHistory> transactionHistories = new ArrayList<>();
 
     public UserGroup() {

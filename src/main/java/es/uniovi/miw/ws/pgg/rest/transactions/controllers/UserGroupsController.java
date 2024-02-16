@@ -49,40 +49,72 @@ public class UserGroupsController {
         }
     }
 
+//    @PostMapping
+//    public ResponseEntity<?> postUserGroup2(@Valid @RequestBody UserGroup userGroup) {
+//
+//        //Find the user group by the user and the group
+//        Optional<Group> foundGroup = groupRepository.findById(userGroup.getGroup().getId());
+//        List<User> foundUser = userRepository.findById(userGroup.getUser().getId());
+//
+//        if (foundGroup.isEmpty() || foundUser.isEmpty()) {
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//        userGroup.setGroup(foundGroup.get());
+//        userGroup.setUser(foundUser.get(0));
+//
+//        userGroupRepository.saveAndFlush(userGroup);
+//
+//
+//        URI location = ServletUriComponentsBuilder
+//                .fromCurrentRequest()
+//                .path("/{id}")
+//                .buildAndExpand(userGroup.getId())
+//                .toUri();
+//
+//        return ResponseEntity.created(location).body(userGroup);
+//    }
+
     @PostMapping
     public ResponseEntity<?> postUserGroup(@Valid @RequestBody UserGroup userGroup) {
 
-        //Find the user group by the user and the group
-        Optional<Group> foundGroup = groupRepository.findById(userGroup.getGroup().getId());
-        List<User> foundUser = userRepository.findById(userGroup.getUser().getId());
+        System.out.println("UserGroup: " + userGroup);
+        // Verificar si el grupo está presente en el UserGroup
+        if (userGroup.getGroup() == null) {
+            return ResponseEntity.badRequest().body("Group is required");
+        }
 
-        if (foundGroup.isEmpty() || foundUser.isEmpty()) {
+        // Encontrar el grupo por su ID
+        Optional<Group> foundGroup = groupRepository.findById(userGroup.getGroup().getId());
+
+        // Verificar si se encontró el grupo
+        if (foundGroup.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
+        // Encontrar el usuario por su ID
+        List<User> foundUser = userRepository.findById(userGroup.getUser().getId());
+
+        // Verificar si se encontró el usuario
+        if (foundUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Asignar el grupo y el usuario al UserGroup
         userGroup.setGroup(foundGroup.get());
         userGroup.setUser(foundUser.get(0));
 
+        // Guardar el UserGroup
         userGroupRepository.saveAndFlush(userGroup);
 
-
-//        UserGroup responseElement = new UserGroup();
-//        responseElement.setId(userGroup.getId());
-//        responseElement.setName(userGroup.getName());
-//        responseElement.setTotalExpected(userGroup.getTotalExpected());
-//        responseElement.setTotalContributed(userGroup.getTotalContributed());
-//        responseElement.setGroup(userGroup.getGroup());
-//        responseElement.setUser(userGroup.getUser());
-//
-
-
-
+        // Construir la URI de la respuesta
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(userGroup.getId())
                 .toUri();
 
+        // Devolver la respuesta con el código 201 (Created) y la URI de ubicación
         return ResponseEntity.created(location).body(userGroup);
     }
 

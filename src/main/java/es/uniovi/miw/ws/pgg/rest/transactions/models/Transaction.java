@@ -1,4 +1,5 @@
 package es.uniovi.miw.ws.pgg.rest.transactions.models;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -6,7 +7,6 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.Date;
 
 @Entity
-
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,11 +15,13 @@ public class Transaction {
 //    private long userGroup_id;
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
 
     @ManyToOne
     @JoinColumn(name = "user_group_id")
+    @JsonIgnore
     private UserGroup userGroup;
 
     @NotBlank
