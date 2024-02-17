@@ -7,5 +7,6 @@ import java.util.List;
 
 @Repository
 public interface UserGroupRepository extends JpaRepository<UserGroup, Long>{
-    public List<UserGroup> findByName(String groupName);
+    public List<UserGroup> findByUserId(Long userId);
+
 }

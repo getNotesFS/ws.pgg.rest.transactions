@@ -60,7 +60,6 @@ public class UsersController {
         } else {
             User current = found.get();
             current.setName(user.getName());
-            current.setEmail(user.getEmail());
             // Add more fields if needed
 
             userRepository.saveAndFlush(current);

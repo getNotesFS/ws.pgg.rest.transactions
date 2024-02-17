@@ -5,13 +5,24 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-@Table(name = "groupG")
+@Table(name = "groupg")
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,47 +31,26 @@ public class Group {
     @NotBlank
     private String name;
 
-    @OneToMany(mappedBy = "group")
-    @JsonIgnore
-    private List<UserGroup> userGroups = new ArrayList<>();
+    private long masterOfGroupId;
 
-    public Group() {
-    }
-    public Group(String name) {
-        this.name = name;
-    }
+    @Min(0)
+    private double totalContributed;
 
-    public long getId() {
-        return id;
-    }
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "usergroup",
+            joinColumns = {
+                    @JoinColumn(name = "group_id", referencedColumnName = "id")
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "user_id", referencedColumnName = "id")
+            }
+    )
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<UserGroup> getUserGroups() {
-        return userGroups;
-    }
-
-    public void setUserGroups(List<UserGroup> userGroups) {
-        this.userGroups = userGroups;
-    }
+    private Set<User> users;
 
 
     @Override
-    public String toString() {
-        return "GroupG{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", userGroups=" + userGroups +
-                '}';
-    }
+    public String toString() { return "Group{" + "id=" + id + ", name='" + name + '\''
+            + ", masterOfGroupId=" + masterOfGroupId + ", totalContributed="
+            + totalContributed + ", users=" + users + '}'; }
 }

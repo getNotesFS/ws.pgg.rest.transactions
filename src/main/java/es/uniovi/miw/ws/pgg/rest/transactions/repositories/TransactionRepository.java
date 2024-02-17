@@ -9,4 +9,8 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction, Long>{
 
     public List<Transaction> findById(long id);
+
+    public List<Transaction> findByUserId(long userId);
+
+    public List<Transaction> findByGroupId(long groupId);
 }

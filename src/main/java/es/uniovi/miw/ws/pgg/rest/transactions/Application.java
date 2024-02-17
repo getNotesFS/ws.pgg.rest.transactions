@@ -20,7 +20,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         ),
         servers = {
                 @Server(
-                        url = "http://localhost:8080/ws.pgg.rest.transactions",
+                        url = "${server.base-url}",
                         description = "Local server"
                 )
         }

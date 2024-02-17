@@ -4,6 +4,7 @@ import es.uniovi.miw.ws.pgg.rest.transactions.models.Group;
 import es.uniovi.miw.ws.pgg.rest.transactions.models.User;
 import es.uniovi.miw.ws.pgg.rest.transactions.models.UserGroup;
 import es.uniovi.miw.ws.pgg.rest.transactions.repositories.GroupRepository;
+import es.uniovi.miw.ws.pgg.rest.transactions.repositories.TransactionRepository;
 import es.uniovi.miw.ws.pgg.rest.transactions.repositories.UserGroupRepository;
 import es.uniovi.miw.ws.pgg.rest.transactions.repositories.UserRepository;
 import jakarta.validation.Valid;
@@ -25,13 +26,15 @@ public class UserGroupsController {
 
     private final UserRepository userRepository;
 
-    public UserGroupsController(UserGroupRepository userGroupRepository, GroupRepository groupRepository, UserRepository userRepository) {
+    private final TransactionRepository transactionRepository;
+
+
+    public UserGroupsController(UserGroupRepository userGroupRepository, GroupRepository groupRepository, UserRepository userRepository, TransactionRepository transactionRepository ) {
         this.userGroupRepository = userGroupRepository;
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
+        this.transactionRepository = transactionRepository;
     }
-
-
 
     @GetMapping
     public ResponseEntity<?> getUserGroups() {
@@ -49,43 +52,23 @@ public class UserGroupsController {
         }
     }
 
-//    @PostMapping
-//    public ResponseEntity<?> postUserGroup2(@Valid @RequestBody UserGroup userGroup) {
-//
-//        //Find the user group by the user and the group
-//        Optional<Group> foundGroup = groupRepository.findById(userGroup.getGroup().getId());
-//        List<User> foundUser = userRepository.findById(userGroup.getUser().getId());
-//
-//        if (foundGroup.isEmpty() || foundUser.isEmpty()) {
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//        userGroup.setGroup(foundGroup.get());
-//        userGroup.setUser(foundUser.get(0));
-//
-//        userGroupRepository.saveAndFlush(userGroup);
-//
-//
-//        URI location = ServletUriComponentsBuilder
-//                .fromCurrentRequest()
-//                .path("/{id}")
-//                .buildAndExpand(userGroup.getId())
-//                .toUri();
-//
-//        return ResponseEntity.created(location).body(userGroup);
-//    }
+
 
     @PostMapping
     public ResponseEntity<?> postUserGroup(@Valid @RequestBody UserGroup userGroup) {
 
         System.out.println("UserGroup: " + userGroup);
-        // Verificar si el grupo está presente en el UserGroup
-        if (userGroup.getGroup() == null) {
-            return ResponseEntity.badRequest().body("Group is required");
+
+        UserGroup currentUserGroup = userGroupRepository.findById(userGroup.getId()).orElse(null);
+
+        if (currentUserGroup != null) {
+            return ResponseEntity.badRequest().build();
         }
 
+
+
         // Encontrar el grupo por su ID
-        Optional<Group> foundGroup = groupRepository.findById(userGroup.getGroup().getId());
+        Optional<Group> foundGroup = groupRepository.findById(userGroup.getGroupId());
 
         // Verificar si se encontró el grupo
         if (foundGroup.isEmpty()) {
@@ -93,7 +76,7 @@ public class UserGroupsController {
         }
 
         // Encontrar el usuario por su ID
-        List<User> foundUser = userRepository.findById(userGroup.getUser().getId());
+        List<User> foundUser = userRepository.findById(userGroup.getUserId());
 
         // Verificar si se encontró el usuario
         if (foundUser.isEmpty()) {
@@ -101,8 +84,9 @@ public class UserGroupsController {
         }
 
         // Asignar el grupo y el usuario al UserGroup
-        userGroup.setGroup(foundGroup.get());
-        userGroup.setUser(foundUser.get(0));
+        userGroup.setGroupId(foundGroup.get().getId());
+        userGroup.setUserId(foundUser.get(0).getId());
+
 
         // Guardar el UserGroup
         userGroupRepository.saveAndFlush(userGroup);
@@ -118,6 +102,7 @@ public class UserGroupsController {
         return ResponseEntity.created(location).body(userGroup);
     }
 
+
     @PutMapping("/{id}")
     public ResponseEntity<?> putUserGroup(@PathVariable Long id, @Valid @RequestBody UserGroup userGroup) {
         Optional<UserGroup> found = userGroupRepository.findById(id);
@@ -126,12 +111,8 @@ public class UserGroupsController {
             return ResponseEntity.notFound().build();
         } else {
             UserGroup current = found.get();
-            current.setName(userGroup.getName());
-            current.setTotalExpected(userGroup.getTotalExpected());
-            current.setTotalContributed(userGroup.getTotalContributed());
-            //current.setGroupG(userGroup.getGroupG());
-            current.setUser(userGroup.getUser());
-            // Add more fields if needed
+            current.setUserId(userGroup.getUserId());
+            current.setGroupId(userGroup.getGroupId());
 
             userGroupRepository.saveAndFlush(current);
 
