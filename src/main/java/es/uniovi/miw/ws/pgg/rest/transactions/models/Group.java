@@ -50,7 +50,13 @@ public class Group {
 
 
     @Override
-    public String toString() { return "Group{" + "id=" + id + ", name='" + name + '\''
-            + ", masterOfGroupId=" + masterOfGroupId + ", totalContributed="
-            + totalContributed + ", users=" + users + '}'; }
+    public String toString() {
+        return "Group{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", masterOfGroupId=" + masterOfGroupId +
+                ", totalContributed=" + totalContributed +
+                ", users=" + users +
+                '}';
+    }
 }

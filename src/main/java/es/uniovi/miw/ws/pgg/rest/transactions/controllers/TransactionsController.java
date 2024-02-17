@@ -50,6 +50,7 @@ public class TransactionsController {
     @PostMapping
     public ResponseEntity<?> postTransaction(@Valid @RequestBody Transaction transaction) {
 
+        System.out.println("Transaction: " + transaction);
         // check if the user is in the group
         Optional<Group> groupOptionalFoundUser = groupRepository.findById(transaction.getGroupId());
         if (groupOptionalFoundUser.isPresent()) {

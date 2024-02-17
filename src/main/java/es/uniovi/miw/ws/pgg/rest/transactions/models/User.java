@@ -32,5 +32,6 @@ public class User {
     private Set<Group> groups;
 
     @Override
-    public String toString() { return "User{" + "id=" + id + ", name='" + name + '\'' + ", groups=" + groups + '}'; }
+    public String toString() { return "User{" + "id=" + id + ", name='" + name + '\'' + '}';
+    }
 }

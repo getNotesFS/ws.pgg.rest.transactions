@@ -26,8 +26,10 @@ public class Transaction {
 
     @NotBlank
     private String description;
+
     @Min(0)
     private double graduation;
+
     @Min(0)
     private double entry;
 
@@ -35,15 +37,6 @@ public class Transaction {
     private Date dateExpense;
 
     @Override
-    public String toString() {
-        return "Transaction{" +
-                "id=" + id +
-                ", userId=" + userId +
-                ", groupId=" + groupId +
-                ", description='" + description + '\'' +
-                ", graduation=" + graduation +
-                ", entry=" + entry +
-                ", dateExpense=" + dateExpense +
-                '}';
+    public String toString() { return "Transaction{" + "id=" + id + ", userId=" + userId + ", groupId=" + groupId + ", description='" + description + '\'' + ", graduation=" + graduation + ", entry=" + entry + ", dateExpense=" + dateExpense + '}';
     }
 }
