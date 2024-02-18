@@ -26,15 +26,12 @@ import java.util.Set;
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @NotBlank
     private String name;
 
-    private long masterOfGroupId;
 
-    @Min(0)
-    private double totalContributed;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "usergroup",
@@ -45,18 +42,12 @@ public class Group {
                     @JoinColumn(name = "user_id", referencedColumnName = "id")
             }
     )
-
+    @JsonIgnore
     private Set<User> users;
 
 
     @Override
     public String toString() {
-        return "Group{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", masterOfGroupId=" + masterOfGroupId +
-                ", totalContributed=" + totalContributed +
-                ", users=" + users +
-                '}';
+        return "Group{" + "id=" + id + ", name='" + name + '\'' + '}';
     }
 }

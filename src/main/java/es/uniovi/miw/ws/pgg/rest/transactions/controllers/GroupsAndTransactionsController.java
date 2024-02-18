@@ -24,44 +24,18 @@ public class GroupsAndTransactionsController {
 
 
 
-    @GetMapping
-    public ResponseEntity<?> getTransactionsByGroupId(@PathVariable Long groupId) {
-        List<Transaction> transactions = transactionRepository.findByGroupId(groupId);
-
-        System.out.println("Transactions: " + transactions);
-        if (!transactions.isEmpty()) {
-            return ResponseEntity.ok(transactions);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
 //    @GetMapping
-//    public ResponseEntity<?> getTransactionsByGroupId(@PathVariable Long groupId, @RequestHeader("Authorization") String token) {
-//        try {
-//            // Verificar y decodificar el token
-//            String jwtToken = token.replace("Bearer ", "");
-//            DecodedJWT decodedJWT = JWT.decode(jwtToken);
+//    public ResponseEntity<?> getTransactionsByGroupId(@PathVariable Long groupId) {
+//        List<Transaction> transactions = transactionRepository.findByGroupId(groupId);
 //
-//            System.out.println("Token: " + jwtToken);
-//            System.out.println("Decoded JWT: " + decodedJWT);
-//            // Realiza cualquier verificación adicional que necesites aquí
-//
-//            // Obtener las transacciones por groupId
-//            List<Transaction> transactions = transactionRepository.findByGroupId(groupId);
-//
-//            // Verificar si se encontraron transacciones
-//            if (!transactions.isEmpty()) {
-//                return ResponseEntity.ok(transactions);
-//            } else {
-//                return ResponseEntity.notFound().build();
-//            }
-//        } catch (JWTDecodeException e) {
-//            // El token no se pudo decodificar
-//            System.out.println("Token inválido: " + token);
-//            return ResponseEntity.badRequest().body("Token inválido");
+//        System.out.println("Transactions: " + transactions);
+//        if (!transactions.isEmpty()) {
+//            return ResponseEntity.ok(transactions);
+//        } else {
+//            return ResponseEntity.notFound().build();
 //        }
 //    }
+
 
 
 }

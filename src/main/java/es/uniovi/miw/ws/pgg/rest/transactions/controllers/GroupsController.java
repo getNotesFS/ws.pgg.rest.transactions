@@ -1,14 +1,16 @@
 package es.uniovi.miw.ws.pgg.rest.transactions.controllers;
 
-import es.uniovi.miw.ws.pgg.rest.transactions.models.Group;
-import es.uniovi.miw.ws.pgg.rest.transactions.models.User;
-import es.uniovi.miw.ws.pgg.rest.transactions.repositories.GroupRepository;
+import es.uniovi.miw.ws.pgg.rest.transactions.models.*;
+import es.uniovi.miw.ws.pgg.rest.transactions.repositories.*;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -20,6 +22,18 @@ public class GroupsController {
 
 
     private final GroupRepository groupRepository;
+
+    @Autowired
+    private UserGroupRepository userGroupRepository;
+
+    @Autowired
+    private HistoryRepository historyRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Autowired
+    private DetailsRepository detailsRepository;
 
     public GroupsController(GroupRepository groupRepository) {
         this.groupRepository = groupRepository;
@@ -65,6 +79,41 @@ public class GroupsController {
     }
 
 
+    @GetMapping("/{groupId}/history")
+    public ResponseEntity<List<History>> getGroupTransactionHistory(@PathVariable Long groupId) {
+        Optional<Group> groupOptional = groupRepository.findById(groupId);
+        if (groupOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Group group = groupOptional.get();
+        List<UserGroup> userGroups = userGroupRepository.findByGroupId(groupId);
+        List<History> groupTransactionHistory = new ArrayList<>();
+        for (UserGroup userGroup : userGroups) {
+            List<History> userGroupHistory = historyRepository.findByUserGroup(userGroup);
+            groupTransactionHistory.addAll(userGroupHistory);
+        }
+        return ResponseEntity.ok(groupTransactionHistory);
+    }
+
+    @GetMapping("/{groupId}/users/{userId}/transactions/{transactionId}/details")
+    public ResponseEntity<Details> getTransactionDetails(@PathVariable Long groupId,
+                                                         @PathVariable Long userId,
+                                                         @PathVariable Long transactionId) {
+        UserGroup userGroup = userGroupRepository.findByUser_IdAndGroup_Id(userId, groupId);
+        if (userGroup == null) {
+            return ResponseEntity.notFound().build();
+        }
+        Optional<Transaction> transactionOptional = transactionRepository.findById(transactionId);
+        if (transactionOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Transaction transaction = transactionOptional.get();
+        Details details = detailsRepository.findByTransactionAndUserGroup(transaction, userGroup);
+        if (details == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(details);
+    }
 
 
 
@@ -81,17 +130,7 @@ public class GroupsController {
             Group current = found.get();
             current.setName(group.getName());
             current.setId(group.getId());
-            if(group.getMasterOfGroupId() != 0){
-                current.setMasterOfGroupId(group.getMasterOfGroupId());
-            }
-            if(group.getTotalContributed() != 0){
-                current.setTotalContributed(group.getTotalContributed());
-            }
-            if(group.getUsers() != null){
-                current.setUsers(group.getUsers());
-            }
-            System.out.println("putGroup: " + current);
-
+            //current.setUsers(group.getUsers());
             groupRepository.saveAndFlush(current);
 
             return ResponseEntity.ok(current);

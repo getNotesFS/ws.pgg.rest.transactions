@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,16 +21,21 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserGroup {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @Column(name = "group_id")
-    private long groupId;
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
 
-    @Column(name = "user_id")
-    private long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+
+    @Min(0)
+    private double totalIndividual;
 
 
 
@@ -38,8 +44,9 @@ public class UserGroup {
     public String toString() {
         return "UserGroup{" +
                 "id=" + id +
-                ", groupId=" + groupId +
-                ", userId=" + userId +
+                ", groupId=" + group.getId() +
+                ", userId=" + user.getId() +
+                ", totalIndividual=" + totalIndividual +
                 '}';
     }
 

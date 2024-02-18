@@ -1,4 +1,5 @@
 package es.uniovi.miw.ws.pgg.rest.transactions.models;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -17,26 +19,24 @@ import java.util.Date;
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    @Column(name = "user_id")
-    private long userId;
-
-    @Column(name = "group_id")
-    private long groupId;
+    private Long id;
 
     @NotBlank
     private String description;
 
     @Min(0)
-    private double graduation;
-
-    @Min(0)
-    private double entry;
+    private double expense;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateExpense;
 
     @Override
-    public String toString() { return "Transaction{" + "id=" + id + ", userId=" + userId + ", groupId=" + groupId + ", description='" + description + '\'' + ", graduation=" + graduation + ", entry=" + entry + ", dateExpense=" + dateExpense + '}';
+    public String toString() {
+        return "Transaction{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                ", expense=" + expense +
+                ", dateExpense=" + dateExpense +
+                '}';
     }
 }
