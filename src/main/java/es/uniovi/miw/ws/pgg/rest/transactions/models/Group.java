@@ -31,6 +31,8 @@ public class Group {
     @NotBlank
     private String name;
 
+    private Long idMaster;
+
 
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -48,6 +50,6 @@ public class Group {
 
     @Override
     public String toString() {
-        return "Group{" + "id=" + id + ", name='" + name + '\'' + '}';
+        return "Group{" + "id=" + id + ", name='" + name + '\'' + ", idMaster=" + idMaster + '}';
     }
 }

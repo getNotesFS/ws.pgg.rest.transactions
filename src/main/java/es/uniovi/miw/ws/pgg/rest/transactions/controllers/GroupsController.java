@@ -63,9 +63,6 @@ public class GroupsController {
 
     @PostMapping
     public ResponseEntity<?> postGroup(@Valid @RequestBody Group group){
-
-
-
         groupRepository.saveAndFlush(group);
 
         URI location = ServletUriComponentsBuilder
@@ -130,6 +127,7 @@ public class GroupsController {
             Group current = found.get();
             current.setName(group.getName());
             current.setId(group.getId());
+            //current.setIdMaster(group.getIdMaster());
             //current.setUsers(group.getUsers());
             groupRepository.saveAndFlush(current);
 

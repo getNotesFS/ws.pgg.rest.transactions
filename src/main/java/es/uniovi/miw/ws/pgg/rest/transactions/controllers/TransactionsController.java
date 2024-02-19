@@ -74,9 +74,11 @@ public class TransactionsController {
         Optional<Group> foundGroup = groupRepository.findById(idGroup);
         if (foundGroup.isEmpty()) {
             System.out.println("Group not found");
+            transactionRepository.delete(transaction);
             return ResponseEntity.notFound().build();
         }else{
             System.out.println("Found Group: " + foundGroup.get());
+
         }
 
         // Update group totalContributed
@@ -84,6 +86,7 @@ public class TransactionsController {
         
         if (foundUser.isEmpty()) {
             System.out.println("User not found");
+            transactionRepository.delete(transaction);
             return ResponseEntity.notFound().build();
         }else{
             System.out.println("Found User: " + foundUser.get());

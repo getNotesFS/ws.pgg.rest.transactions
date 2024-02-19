@@ -61,6 +61,9 @@ public class UsersController {
     @PostMapping
     public ResponseEntity<?> postUser(@Valid @RequestBody User user) {
 
+        if(user.getId()==0 || user.getId()==null){
+           return ResponseEntity.badRequest().build();
+        }
         userRepository.saveAndFlush(user);
 
         URI location = ServletUriComponentsBuilder
