@@ -12,9 +12,6 @@ import java.util.List;
 public interface HistoryRepository extends JpaRepository<History, Long> {
 
 
-    List<History> findByUserGroup(UserGroup userGroup);
 
-    // Método para encontrar historiales por ID de grupo de usuario
-   // public List<History> findByUserGroupId(Long userGroupId);
 
 }

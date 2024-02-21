@@ -19,25 +19,22 @@ import java.util.Optional;
 @RequestMapping("/api/transactions")
 public class TransactionsController {
 
-    private final TransactionRepository transactionRepository;
+    private  TransactionRepository transactionRepository;
+    private UserGroupRepository userGroupRepository;
 
-    @Autowired
-    private GroupRepository groupRepository;
-
-    @Autowired
     private DetailsRepository detailsRepository;
 
-    @Autowired
     private HistoryRepository historyRepository;
-    @Autowired
-    private UserGroupRepository userGroupRepository;
-    @Autowired
-    private UserRepository userRepository;
 
-
-
-    public TransactionsController(TransactionRepository transactionRepository ) {
+    public TransactionsController(TransactionRepository transactionRepository,
+                                  UserGroupRepository userGroupRepository,
+                                  DetailsRepository detailsRepository,
+                                  HistoryRepository historyRepository
+    ) {
         this.transactionRepository = transactionRepository;
+        this.userGroupRepository = userGroupRepository;
+        this.detailsRepository=detailsRepository;
+        this.historyRepository=historyRepository;
     }
 
     @GetMapping
@@ -47,7 +44,7 @@ public class TransactionsController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getTransaction(@PathVariable Long id) {
-        Optional<Transaction> found = transactionRepository.findById(id);
+        Optional<Transaction> found = transactionRepository.findByIdTransaction(id);
 
         if (found.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -60,110 +57,46 @@ public class TransactionsController {
     @PostMapping
     public ResponseEntity<?> postTransaction(@Valid @RequestBody Transaction transaction,
                                              @RequestParam("idGroup") Long idGroup,
-                                             @RequestParam("idUser") Long idUser){
+                                             @RequestParam("idUser") Long idUser
+                                             ){
 
 
         System.out.println("Transaction: " + transaction);
         System.out.println("idGroup: " + idGroup);
-        System.out.println("idUser: " + idUser);
 
         transaction.setDateExpense(new Date());
 
         transactionRepository.saveAndFlush(transaction);
 
-        Optional<Group> foundGroup = groupRepository.findById(idGroup);
-        if (foundGroup.isEmpty()) {
+        Optional<UserGroup> foundUserGroup = userGroupRepository.findUserGroupByUserIdAndGroupCategory(idUser,idGroup);
+        if (foundUserGroup.isEmpty()) {
             System.out.println("Group not found");
             transactionRepository.delete(transaction);
             return ResponseEntity.notFound().build();
         }else{
-            System.out.println("Found Group: " + foundGroup.get());
-
+            System.out.println("Found Group: " + foundUserGroup.get());
         }
-
-        // Update group totalContributed
-        Optional<User> foundUser = userRepository.findById(idUser);
-        
-        if (foundUser.isEmpty()) {
-            System.out.println("User not found");
-            transactionRepository.delete(transaction);
-            return ResponseEntity.notFound().build();
-        }else{
-            System.out.println("Found User: " + foundUser.get());
-            foundUser.ifPresent(user -> {
-                user.setTotalAmount(user.getTotalAmount() + transaction.getExpense());
-                userRepository.saveAndFlush(user);
-            });
-        }
-        
-        
-        UserGroup foundUserGroup = userGroupRepository.findByUser_IdAndGroup_Id(idUser, idGroup);
-        System.out.println("Found UserGroup: " + foundUserGroup);
-
-        if (foundUserGroup == null) {
-            System.out.println("UserGroup not found");
-            return ResponseEntity.notFound().build();
-        }else{
-            System.out.println("Found UserGroup: " + foundUserGroup);
-            foundUserGroup.setTotalIndividual(foundUserGroup.getUser().getTotalAmount() / foundUserGroup.getGroup().getUsers().size()); 
-            userGroupRepository.saveAndFlush(foundUserGroup);
-
-        }
-
         // Add details relation
 
         Details details = new Details();
         details.setTransaction(transaction);
-        details.setUserGroup(foundUserGroup);
+        details.setUserGroup(foundUserGroup.get());
         detailsRepository.saveAndFlush(details);
 
         // Add history relation
         History history = new History();
         history.setDetails(details);
-        history.setUserGroup(foundUserGroup);
-        history.setTotal(transaction.getExpense() / foundUserGroup.getGroup().getUsers().size());
+        history.setTotal(transaction.getExpense() / userGroupRepository.countByGroupCategoryId(foundUserGroup.get().getGroupCategory().getIdGroupCategory()));
         historyRepository.saveAndFlush(history);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(transaction.getId())
+                .buildAndExpand(transaction.getIdTransaction())
                 .toUri();
 
         return ResponseEntity.created(location).body(transaction);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> putTransaction(@PathVariable Long id, @Valid @RequestBody Transaction transaction) {
-        Optional<Transaction> found = transactionRepository.findById(id);
 
-        if (found.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            Transaction current = found.get();
-            current.setDescription(transaction.getDescription());
-            current.setDateExpense(new Date());
-            current.setExpense(transaction.getExpense());
-
-
-            transactionRepository.saveAndFlush(current);
-
-
-            return ResponseEntity.ok(current);
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTransaction(@PathVariable Long id) {
-        Optional<Transaction> found = transactionRepository.findById(id);
-
-        if (found.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            Transaction current = found.get();
-            transactionRepository.delete(current);
-            transactionRepository.flush();
-            return ResponseEntity.ok(current);
-        }
-    }
 }

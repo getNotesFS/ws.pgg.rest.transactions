@@ -1,19 +1,10 @@
 package es.uniovi.miw.ws.pgg.rest.transactions.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.*;
 
 @Entity
 @Setter
@@ -23,32 +14,15 @@ import java.util.List;
 public class UserGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idUserGroup;
 
     @ManyToOne
-    @JoinColumn(name = "group_id")
-    private Group group;
+    @JoinColumn(name = "group_category_id")
+    @JsonIgnoreProperties("userGroup")
+    private GroupCategory groupCategory;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
+    private Long userId;
 
     @Min(0)
     private double totalIndividual;
-
-
-
-
-    @Override
-    public String toString() {
-        return "UserGroup{" +
-                "id=" + id +
-                ", groupId=" + group.getId() +
-                ", userId=" + user.getId() +
-                ", totalIndividual=" + totalIndividual +
-                '}';
-    }
-
-
 }

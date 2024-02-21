@@ -20,29 +20,18 @@ public class History {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    private Long idHistory;
 
     @OneToOne
     private Details details;
 
-    @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "group_id", referencedColumnName = "group_id"),
-            @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    })
-    private UserGroup userGroup;
-
     @Min(0)
     private double total;
 
-
-
     @Override
     public String toString()  { return "History{" +
-            "id=" + id +
+            "id=" + idHistory +
             ", details=" + details +
-            ", userGroup=" + userGroup +
             ", total=" + total +
             '}';
     }
