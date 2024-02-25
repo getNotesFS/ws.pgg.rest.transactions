@@ -4,6 +4,7 @@ import es.uniovi.miw.ws.pgg.rest.transactions.models.GroupCategory;
 import es.uniovi.miw.ws.pgg.rest.transactions.models.UserGroup;
 import es.uniovi.miw.ws.pgg.rest.transactions.repositories.GroupRepository;
 import es.uniovi.miw.ws.pgg.rest.transactions.repositories.UserGroupRepository;
+import es.uniovi.miw.ws.pgg.rest.transactions.util.OwnershipResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -81,6 +82,35 @@ public class UserGroupsController {
         } else {
             return ResponseEntity.ok(found);
         }
+    }
+
+    @PutMapping("/{groupId}/ownermaster/{newMasterId}")
+    public ResponseEntity<?> updateMaster(@PathVariable Long groupId, @PathVariable Long newMasterId) {
+        GroupCategory groupCategory = groupRepository.findById(groupId).orElse(null);
+
+        if (groupCategory == null) {
+            return ResponseEntity.notFound().build();
+        }
+        groupCategory.setIdMaster(newMasterId);
+        groupRepository.saveAndFlush(groupCategory);
+
+        return ResponseEntity.ok(groupCategory);
+    }
+    @GetMapping("/owner/{userId}")
+    public ResponseEntity<?> updateMaster(@PathVariable Long userId) {
+
+        boolean isOwner=false;
+        List<UserGroup> userGroups = userGroupRepository.findAll();
+        UserGroup userGroup = userGroups.stream().filter(f->f.getUserId()==userId)
+                .findFirst().orElse(null);
+
+        if (userGroup!=null){
+            GroupCategory ownerGroupCategory = userGroup.getGroupCategory();
+            if(ownerGroupCategory.getIdMaster()==userId)
+                isOwner=true;
+        }
+        OwnershipResponse response = new OwnershipResponse(isOwner);
+        return ResponseEntity.ok(response);
     }
 
 }
