@@ -13,6 +13,7 @@ import java.net.URI;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -68,7 +69,8 @@ public class TransactionsController {
 
         transactionRepository.saveAndFlush(transaction);
 
-        Optional<UserGroup> foundUserGroup = userGroupRepository.findUserGroupByUserIdAndGroupCategory(idUser,idGroup);
+        Optional<UserGroup> foundUserGroup = userGroupRepository.findAll().stream().filter(f->f.getUserId()==idUser && f.getIdUserGroup()==idGroup).findFirst();
+                //.findUserGroupByUserIdAndGroupCategory(idUser,idGroup);
         if (foundUserGroup.isEmpty()) {
             System.out.println("Group not found");
             transactionRepository.delete(transaction);
@@ -98,5 +100,24 @@ public class TransactionsController {
         return ResponseEntity.created(location).body(transaction);
     }
 
+    @GetMapping("/{groupId}/history")
+    public ResponseEntity<?> getGroupTransactionHistory(@PathVariable Long groupId) {
+        Optional<UserGroup> groupOptional = userGroupRepository.findById(groupId);
+        if (groupOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        UserGroup group = groupOptional.get();
 
+        List<History> groupTransactionHistory = historyRepository.findAll().stream().filter(f->f.getDetails().getUserGroup().getIdUserGroup()==groupId).collect(Collectors.toList());
+        if (groupTransactionHistory.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        for (History h : groupTransactionHistory) {
+            h.setTotalCost(h.getDetails().getTransaction().getExpense());
+            h.setDateExpense(h.getDetails().getTransaction().getDateExpense());
+            int individualTotal= userGroupRepository.countByGroupCategoryId( h.getDetails().getUserGroup().getGroupCategory().getIdGroupCategory());
+            h.setTotal(h.getTotal()/individualTotal);
+        }
+        return ResponseEntity.ok(groupTransactionHistory);
+    }
 }

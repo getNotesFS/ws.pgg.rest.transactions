@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -28,6 +29,11 @@ public class History {
     @Min(0)
     private double total;
 
+    @Transient
+    private double totalCost;
+
+    @Transient
+    private Date dateExpense;
     @Override
     public String toString()  { return "History{" +
             "id=" + idHistory +

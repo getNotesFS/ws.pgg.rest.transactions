@@ -23,6 +23,4 @@ public class UserGroup {
 
     private Long userId;
 
-    @Min(0)
-    private double totalIndividual;
 }

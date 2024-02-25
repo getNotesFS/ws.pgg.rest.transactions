@@ -21,7 +21,7 @@ public class GroupCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idGroupCategory;
     @NotBlank
-    private String name;
+        private String name;
     private Long idMaster;
 
 

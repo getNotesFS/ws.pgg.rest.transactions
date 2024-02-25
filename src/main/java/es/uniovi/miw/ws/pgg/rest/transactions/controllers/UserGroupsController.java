@@ -70,4 +70,17 @@ public class UserGroupsController {
             return ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/{userId}/users")
+    public ResponseEntity<?> getAllGroupOfUser(@PathVariable Long userId){
+        List<UserGroup> found = userGroupRepository.
+                findAll().stream().filter(f->f.getUserId()==userId)
+                .collect(Collectors.toList());
+
+        if (found.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(found);
+        }
+    }
+
 }
