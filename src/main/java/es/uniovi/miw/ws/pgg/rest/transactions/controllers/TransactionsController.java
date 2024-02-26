@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -88,7 +89,9 @@ public class TransactionsController {
         // Add history relation
         History history = new History();
         history.setDetails(details);
-        history.setTotal(transaction.getExpense() / userGroupRepository.countByGroupCategoryId(foundUserGroup.get().getGroupCategory().getIdGroupCategory()));
+        double equalParts=transaction.getExpense() / userGroupRepository.countByGroupCategoryId(foundUserGroup.get().getGroupCategory().getIdGroupCategory());
+        DecimalFormat df = new DecimalFormat("#.##");
+        history.setTotal(Double.parseDouble(df.format(equalParts)));
         historyRepository.saveAndFlush(history);
 
         URI location = ServletUriComponentsBuilder
@@ -115,8 +118,8 @@ public class TransactionsController {
         for (History h : groupTransactionHistory) {
             h.setTotalCost(h.getDetails().getTransaction().getExpense());
             h.setDateExpense(h.getDetails().getTransaction().getDateExpense());
-            int individualTotal= userGroupRepository.countByGroupCategoryId( h.getDetails().getUserGroup().getGroupCategory().getIdGroupCategory());
-            h.setTotal(h.getTotal()/individualTotal);
+            //int individualTotal= userGroupRepository.countByGroupCategoryId( h.getDetails().getUserGroup().getGroupCategory().getIdGroupCategory());
+            //h.setTotal(h.getTotal()/individualTotal);
         }
         return ResponseEntity.ok(groupTransactionHistory);
     }

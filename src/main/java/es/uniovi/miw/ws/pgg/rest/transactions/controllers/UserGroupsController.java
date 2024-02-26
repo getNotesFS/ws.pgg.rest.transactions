@@ -108,7 +108,8 @@ public class UserGroupsController {
             GroupCategory ownerGroupCategory = userGroup.getGroupCategory();
             if(ownerGroupCategory.getIdMaster()==userId)
                 isOwner=true;
-        }
+        }else
+            isOwner=true;
         OwnershipResponse response = new OwnershipResponse(isOwner);
         return ResponseEntity.ok(response);
     }
