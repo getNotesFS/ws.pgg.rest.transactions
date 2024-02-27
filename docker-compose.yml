@@ -3,14 +3,17 @@ version: "3.9"
 services:
   java_api:
     container_name: java_api
-    image: api-rest-transactions:1.0.0
+    image: di.smdev.host/pgg_expense:latest
     build: .
     ports:
       - "8080:8080"
     environment:
-        - SPRING_DATASOURCE_URL=jdbc:h2:file:./data/db8
-        - SPRING_DATASOURCE_USERNAME=sa
-        - SPRING_DATASOURCE_PASSWORD=test
+        #- SPRING_DATASOURCE_URL=jdbc:h2:file:./data/db11
+        #- SPRING_DATASOURCE_USERNAME=sa
+        #- SPRING_DATASOURCE_PASSWORD=test
         - SERVER_BASE-URL=http://localhost:8080/ws.pgg.rest.transactions
     volumes:
-      - ./data/db8:/data/db8
+      - h2_data:/usr/local/tomcat/data
+
+volumes:
+  h2_data:
