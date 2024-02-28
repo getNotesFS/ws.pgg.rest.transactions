@@ -3,12 +3,12 @@ version: "3.9"
 services:
   java_api:
     container_name: java_api
-    image: di.smdev.host/pgg_expense:latest
+    image: di.smdev.host/pgg_expense:1.0.2
     build: .
     ports:
       - "8080:8080"
     environment:
-        #- SPRING_DATASOURCE_URL=jdbc:h2:file:./data/db11
+        #- SPRING_DATASOURCE_URL=jdbc:h2:file:./data/db12
         #- SPRING_DATASOURCE_USERNAME=sa
         #- SPRING_DATASOURCE_PASSWORD=test
         - SERVER_BASE-URL=http://localhost:8080/ws.pgg.rest.transactions

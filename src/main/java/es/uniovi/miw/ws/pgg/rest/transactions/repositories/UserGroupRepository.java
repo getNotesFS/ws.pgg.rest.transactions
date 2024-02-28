@@ -20,4 +20,7 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long>{
 
     @Query("SELECT COUNT(u) FROM UserGroup u WHERE u.groupCategory.idGroupCategory = :groupCategoryId")
     int countByGroupCategoryId(Long groupCategoryId);
+
+    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM UserGroup u WHERE u.userId = :userId AND u.groupCategory.idGroupCategory = :groupCategoryId")
+    public boolean existsByUserIdAndGroupCategoryId(Long userId, Long groupCategoryId);
 }

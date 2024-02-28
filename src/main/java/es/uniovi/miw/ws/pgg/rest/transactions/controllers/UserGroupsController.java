@@ -12,6 +12,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -57,6 +58,9 @@ public class UserGroupsController {
             UserGroup userGroup = new UserGroup();
             userGroup.setGroupCategory(group);
             userGroup.setUserId(userId);
+            if(userGroupRepository.existsByUserIdAndGroupCategoryId(userId,groupId)) {
+                continue;
+            }
             userGroupRepository.save(userGroup);
             URI userGroupUri = ServletUriComponentsBuilder
                     .fromCurrentRequest()
@@ -74,7 +78,7 @@ public class UserGroupsController {
     @GetMapping("/{userId}/users")
     public ResponseEntity<?> getAllGroupOfUser(@PathVariable Long userId){
         List<UserGroup> found = userGroupRepository.
-                findAll().stream().filter(f->f.getUserId()==userId)
+                findAll().stream().filter(f-> Objects.equals(f.getUserId(), userId))
                 .collect(Collectors.toList());
 
         if (found.isEmpty()) {
