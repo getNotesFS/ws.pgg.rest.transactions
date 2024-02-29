@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin(origins= "*", maxAge = 3600)
@@ -41,7 +42,15 @@ public class GroupsController {
             return ResponseEntity.ok(found.get());
         }
     }
+    @GetMapping("/unassigned")
+    public ResponseEntity<?> unassignedGroup(
+            @RequestParam(value = "name", required = false) String name) {
 
+        List<GroupCategory> groupCategories = groupRepository.findAll()
+                .stream().filter(f->f.getIdMaster()==null).toList();
+        //if the Tolist the problem so using collect(Collectors.toList());
+        return ResponseEntity.ok(groupCategories);
+    }
     @PostMapping
     public ResponseEntity<?> postGroup(@Valid @RequestBody GroupCategory groupCategory){
         groupRepository.saveAndFlush(groupCategory);
